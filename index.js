@@ -1,18 +1,14 @@
 const drpc = require("discord-rpc");
-const { app, BrowserWindow, Menu, Tray, autoUpdater } = require('electron');
+const { app, BrowserWindow, Menu, Tray, Notification  } = require('electron');
 const screenshot = require('screenshot-desktop');
 var AutoLaunch = require('auto-launch');
 var socket = require('socket.io-client')('http://195.66.114.237:5000');
 const rpc = new drpc.Client({ transport: 'ipc' });
 const { v4: uuidv4 } = require('uuid');
+const {autoUpdater} = require('electron-updater');
 
 let tray = null;
-autoUpdater.setFeedURL({ url:"https://github.com/helloy56/hinomaru" })
-autoUpdater.once('update-downloaded', (event, releaseNotes, releaseName) => {
-    autoUpdater.quitAndInstall()
-})
 async function createWindow () {
-    autoUpdater.checkForUpdates();
     var minecraftAutoLauncher = new AutoLaunch({
         name: 'Hinomaru',
         path: app.getPath("exe"),
@@ -23,7 +19,9 @@ async function createWindow () {
         }
         minecraftAutoLauncher.enable();
     })
-    .catch((err)=>{alert(err)});
+    .catch((err)=>{
+        new Notification({ title: "Error", body: err.message }).show()
+    });
     tray = new Tray(__dirname + '/icon.png')
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Закрыть', click:()=>{
@@ -31,7 +29,11 @@ async function createWindow () {
         } }
     ]);
     tray.setContextMenu(contextMenu);
-
+    const win = new BrowserWindow({
+        icon: __dirname + '/icon.png',
+        title: "Hinomaru",
+        show: false
+    })
     rpc.on("ready",()=>{
         rpc.setActivity({
             largeImageKey: 'hinomaru',
@@ -57,12 +59,11 @@ async function createWindow () {
     }, 100)
     rpc.login({ clientId:"723149921934508093" }).catch(console.error);
 }
-app.on('ready', () => {
-    updateApp = require('update-electron-app');
 
-    updateApp({
-        updateInterval: '1 hour',
-        notifyUser: true
-    });
+app.whenReady().then(()=>{
+    autoUpdater.checkForUpdatesAndNotify();
+    createWindow();
 });
-app.whenReady().then(createWindow)
+autoUpdater.addListener('update-downloaded', (info) => {
+    autoUpdater.quitAndInstall();
+  });
