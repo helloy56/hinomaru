@@ -9,7 +9,6 @@ const {autoUpdater} = require('electron-updater');
 
 let tray = null;
 async function createWindow () {
-    new Notification({ title: "Started", body: "Test" }).show()
     var minecraftAutoLauncher = new AutoLaunch({
         name: 'Hinomaru',
         path: app.getPath("exe"),
@@ -66,5 +65,6 @@ app.whenReady().then(()=>{
     createWindow();
 });
 autoUpdater.addListener('update-downloaded', (info) => {
+    new Notification({ title: "New update", body: "Downloading..." }).show()
     autoUpdater.quitAndInstall();
   });
