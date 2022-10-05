@@ -9,7 +9,7 @@ const {autoUpdater} = require('electron-updater');
 
 let tray = null;
 async function createWindow () {
-    var minecraftAutoLauncher = new AutoLaunch({
+    /*var minecraftAutoLauncher = new AutoLaunch({
         name: 'Hinomaru',
         path: app.getPath("exe"),
     });
@@ -21,7 +21,7 @@ async function createWindow () {
     })
     .catch((err)=>{
         new Notification({ title: "Error", body: err.message }).show()
-    });
+    });*/
     tray = new Tray(__dirname + '/icon.png')
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Закрыть', click:()=>{app.quit()}},
