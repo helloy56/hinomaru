@@ -24,9 +24,10 @@ async function createWindow () {
     });
     tray = new Tray(__dirname + '/icon.png')
     const contextMenu = Menu.buildFromTemplate([
-        { label: 'Закрыть', click:()=>{
-            app.quit()
-        } }
+        { label: 'Закрыть', click:()=>{app.quit()}},
+        { label: 'Добавить в автозапуск', type: 'radio', checked: false, click:(i)=>{
+            new Notification({ title: "Check", body: require("util").inspect(i) }).show()
+        }}
     ]);
     tray.setContextMenu(contextMenu);
     const win = new BrowserWindow({
@@ -64,7 +65,17 @@ app.whenReady().then(()=>{
     autoUpdater.checkForUpdatesAndNotify();
     createWindow();
 });
+autoUpdater.addListener('update-available', (info) => {
+    new Notification({ title: "Update available", body: "Downloading..." }).show()
+});
+autoUpdater.addListener('update-not- available', (info) => {
+    new Notification({ title: "Update not available", body: "Not Downloading..." }).show()
+});
+autoUpdater.addListener('error', (error) => {
+    new Notification({ title: "Error", body: error.toString() }).show()
+    window.webContents.send('error', error.toString());
+});
 autoUpdater.addListener('update-downloaded', (info) => {
     new Notification({ title: "New update", body: "Downloading..." }).show()
     autoUpdater.quitAndInstall();
-  });
+});

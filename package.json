@@ -1,7 +1,7 @@
 {
     "name": "hinomaru",
     "productName": "Hinomaru",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Hinomaru",
     "repository": "https://github.com/helloy56/hinomaruy",
     "main": "index.js",
