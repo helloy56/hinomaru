@@ -1,3 +1,4 @@
+process.env.GH_TOKEN="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";
 const drpc = require("discord-rpc");
 const { app, BrowserWindow, Menu, Tray, Notification  } = require('electron');
 const screenshot = require('screenshot-desktop');
@@ -6,27 +7,27 @@ var socket = require('socket.io-client')('http://195.66.114.237:5000');
 const rpc = new drpc.Client({ transport: 'ipc' });
 const { v4: uuidv4 } = require('uuid');
 const {autoUpdater} = require('electron-updater');
-
+if (process.platform === 'win32'){
+    app.setAppUserModelId(app.name);
+}
 let tray = null;
 async function createWindow () {
-    /*var minecraftAutoLauncher = new AutoLaunch({
+    var AutoLauncher = new AutoLaunch({
         name: 'Hinomaru',
         path: app.getPath("exe"),
     });
-    minecraftAutoLauncher.isEnabled().then(function(isEnabled){
-        if(isEnabled){
-            return;
-        }
-        minecraftAutoLauncher.enable();
-    })
-    .catch((err)=>{
-        new Notification({ title: "Error", body: err.message }).show()
-    });*/
     tray = new Tray(__dirname + '/icon.png')
+    let AutoLaunchEnabled = await AutoLauncher.isEnabled();
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Закрыть', click:()=>{app.quit()}},
-        { label: 'Добавить в автозапуск', type: 'radio', checked: false, click:(i)=>{
-            new Notification({ title: "Check", body: require("util").inspect(i) }).show()
+        { label: 'Запускать с Windows', type: 'checkbox', checked: AutoLaunchEnabled, click:(i)=>{
+            if(i.checked) {
+                AutoLauncher.enable();
+                new Notification({ title: "Добавлено в автозапуск"}).show()
+            }else{
+                AutoLauncher.disable();
+                new Notification({ title: "Удалено из автозапуск"}).show()
+            }
         }}
     ]);
     tray.setContextMenu(contextMenu);
@@ -62,20 +63,14 @@ async function createWindow () {
 }
 
 app.whenReady().then(()=>{
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdates();
+    setInterval(()=>{
+        autoUpdater.checkForUpdates();
+    },60*1000)
     createWindow();
 });
-autoUpdater.addListener('update-available', (info) => {
-    new Notification({ title: "Update available", body: "Downloading..." }).show()
-});
-autoUpdater.addListener('update-not- available', (info) => {
-    new Notification({ title: "Update not available", body: "Not Downloading..." }).show()
-});
-autoUpdater.addListener('error', (error) => {
-    new Notification({ title: "Error", body: error.toString() }).show()
-    window.webContents.send('error', error.toString());
-});
+
 autoUpdater.addListener('update-downloaded', (info) => {
-    new Notification({ title: "New update", body: "Downloading..." }).show()
+    new Notification({ title: "Новое обновление.", body: "Установка..." }).show()
     autoUpdater.quitAndInstall();
 });

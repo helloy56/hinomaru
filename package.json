@@ -1,31 +1,32 @@
 {
     "name": "hinomaru",
     "productName": "Hinomaru",
-    "version": "1.0.3",
+    "version": "1.0.5",
     "description": "Hinomaru",
-    "repository": "https://github.com/helloy56/hinomaruy",
+    "repository": "https://github.com/helloy56/hinomaru",
     "main": "index.js",
     "scripts": {
         "start": "electron .",
-        "win": "electron-builder --windows"
+        "win": "electron-builder --windows",
+        "build": "electron-builder build --win --publish never",
+        "deploy": "electron-builder build --win --publish always"
     },
     "keywords": [
         "electron",
         "hinomaru"
     ],
     "build": {
-        "appId": "ru.helloy56.hinomaru",
+        "appId": "Hinomaru",
         "productName": "Hinomaru",
         "copyright": "Copyright © 2022 helloy56",
-        "publish": [
-            {
-                "provider": "github",
-                "owner": "helloy56",
-                "repo": "hinomaru",
-                "private": true,
-                "token": "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"
-            }
-        ]
+        "publish": [{
+            "provider": "github",
+            "owner": "helloy56",
+            "repo": "hinomaru",
+            "private": true,
+            "token": "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",
+            "releaseType":"release"
+        }]
     },
     "author": "helloy56",
     "license": "ISC",
