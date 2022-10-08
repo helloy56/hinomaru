@@ -1,7 +1,7 @@
 {
     "name": "hinomaru",
     "productName": "Hinomaru",
-    "version": "1.0.5",
+    "version": "1.0.8",
     "description": "Hinomaru",
     "repository": "https://github.com/helloy56/hinomaru",
     "main": "index.js",
@@ -19,19 +19,22 @@
         "appId": "Hinomaru",
         "productName": "Hinomaru",
         "copyright": "Copyright © 2022 helloy56",
-        "publish": [{
-            "provider": "github",
-            "owner": "helloy56",
-            "repo": "hinomaru",
-            "private": true,
-            "token": "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",
-            "releaseType":"release"
-        }]
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "helloy56",
+                "repo": "hinomaru",
+                "private": true,
+                "token": "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",
+                "releaseType": "release"
+            }
+        ]
     },
     "author": "helloy56",
     "license": "ISC",
     "dependencies": {
         "auto-launch": "^5.0.5",
+        "cron": "^2.1.0",
         "discord-rpc": "^4.0.1",
         "electron-updater": "^5.2.1",
         "node-gyp": "^9.2.0",

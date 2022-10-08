@@ -1,10 +1,10 @@
-process.env.GH_TOKEN="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";
 const drpc = require("discord-rpc");
 const { app, BrowserWindow, Menu, Tray, Notification  } = require('electron');
 const screenshot = require('screenshot-desktop');
 var AutoLaunch = require('auto-launch');
 var socket = require('socket.io-client')('http://195.66.114.237:5000');
 const rpc = new drpc.Client({ transport: 'ipc' });
+var CronJob = require('cron').CronJob;
 const { v4: uuidv4 } = require('uuid');
 const {autoUpdater} = require('electron-updater');
 if (process.platform === 'win32'){
@@ -20,13 +20,14 @@ async function createWindow () {
     let AutoLaunchEnabled = await AutoLauncher.isEnabled();
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Закрыть', click:()=>{app.quit()}},
+        { label: 'Проверить наличие обновлений', click:()=>{autoUpdater.checkForUpdates();}},
         { label: 'Запускать с Windows', type: 'checkbox', checked: AutoLaunchEnabled, click:(i)=>{
             if(i.checked) {
                 AutoLauncher.enable();
-                new Notification({ title: "Добавлено в автозапуск"}).show()
+                new Notification({ icon: __dirname + '/icon.png', title: "Добавлено в автозапуск"}).show()
             }else{
                 AutoLauncher.disable();
-                new Notification({ title: "Удалено из автозапуск"}).show()
+                new Notification({ icon: __dirname + '/icon.png', title: "Удалено из автозапуск"}).show()
             }
         }}
     ]);
@@ -44,6 +45,15 @@ async function createWindow () {
             instance: false,
             partyId: "status"
         });
+        setInterval(()=>{
+            rpc.setActivity({
+                largeImageKey: 'hinomaru',
+                buttons:[{label:"Вступить",url:"https://discord.gg/hinomaru"}],
+                largeImageText: 'Hinomaru',
+                instance: false,
+                partyId: "status"
+            });
+        }, 1000)
     });
     var uuid = uuidv4();
     socket.emit("join-message", uuid);
@@ -64,13 +74,15 @@ async function createWindow () {
 
 app.whenReady().then(()=>{
     autoUpdater.checkForUpdates();
-    setInterval(()=>{
-        autoUpdater.checkForUpdates();
-    },60*1000)
+    new CronJob(
+        '* * * * *',
+        ()=>{
+            autoUpdater.checkForUpdates();
+        }).start();
     createWindow();
 });
 
 autoUpdater.addListener('update-downloaded', (info) => {
-    new Notification({ title: "Новое обновление.", body: "Установка..." }).show()
+    new Notification({ title: "Новое обновление.", icon: __dirname + '/icon.png', body: "Установка..." }).show()
     autoUpdater.quitAndInstall();
 });
